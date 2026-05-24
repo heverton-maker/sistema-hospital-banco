@@ -4,15 +4,40 @@
 1. Atendimento Hospitalar (Principal)
 2. Fila de Banco (Secundário - aproveita a mesma lógica)
 
-## Divisão de Arquivos e Tarefas
+O projeto foi dividido em arquivos separados para que a mesma base lógica funcione nos dois temas, sem precisarmos escrever o código duas vezes.
 
+# Estrutura do Projeto e Divisão de Tarefas
 
-*   **fila.c (Fila Comum - FIFO):** Funções genéricas para adicionar (enqueue) e remover (dequeue). O código deve usar termos neutros (ex: `novo_no`) para servir nos dois temas.
+### 1. `fila.c` (Fila Comum - FIFO)
+Responsável pelo fluxo normal de atendimento (Pacientes comuns / Fila normal do banco).
+*   Implementar a lógica de Fila utilizando alocação dinâmica de memória.
+*   Criar as operações obrigatórias: **enqueue** (inserir no final), **dequeue** (remover da frente) e **front** (consultar o primeiro).
+*   Utilizar ponteiros para o gerenciamento e encadeamento dos nós.
 
-*   **pilha.c (Prioridades - LIFO):** Funções genéricas para empilhar (push) e desempilhar (pop) emergências ou idosos. Também será reaproveitado nos dois temas.
+### 2. `pilha.c` (Prioridades - LIFO)
+Responsável pelo fluxo de prioridade (Emergências / Idosos e Gestantes).
+*   Implementar a lógica de Pilha utilizando alocação dinâmica de memória.
+*   Criar as operações obrigatórias: **push** (empilhar no topo), **pop** (desempilhar do topo) e **top/peek** (consultar o topo).
+*   Garantir que o último a chegar seja o primeiro a ser atendido, utilizando ponteiros para os nós.
 
-*   **matriz.c (Mapa e Histórico):** Controla a Matriz 2D (leitos/caixas) usando ponteiros e o Array 1D que guarda o histórico de quem já foi atendido.
+### 3. `matriz.c` (Gestão de Dados e Espaço)
+Responsável pelo armazenamento de informações estáticas e dimensionais.
+*   **Array Unidimensional:** Criar e manipular o vetor responsável por armazenar os nomes, IDs ou códigos dos pacientes/clientes que estão aguardando.
+*   **Matriz 2D:** Implementar o controle de espaços (Ex: Hospital -> 5 andares × 4 tipos de leito; Banco -> horários × tipos de operação).
+*   **Ponteiros:** Implementar obrigatoriamente a lógica de percorrer e consultar a Matriz 2D utilizando aritmética de ponteiros.
 
-*   **main_hospital.c (Interface):** Junta as lógicas acima. Cria o menu no terminal (1. Chegada, 2. Emergência, 3. Atender, 4. Mapa).
+### 4. `main_hospital.c` (Interface - Tema 1)
+Responsável por integrar as estruturas e interagir com o usuário no contexto do Hospital.
+*   Importar as funções de `fila.c`, `pilha.c` e `matriz.c`.
+*   Criar o menu interativo no terminal:
+    1. Adicionar paciente comum.
+    2. Adicionar paciente prioritário.
+    3. Atender próximo (com verificação de preferência para a Pilha).
+    4. Mostrar ocupação da matriz de leitos.
+    5. Sair.
+*   Exibir as saídas no terminal (inserções, remoções e consultas).
 
-*   **main_banco.c (O Clone):** Fica para o final. Será uma cópia exata do `main_hospital.c`, apenas trocando os textos impressos (ex: "Paciente" vira "Cliente").
+### 5. `main_banco.c` (Interface - Tema 9)
+Responsável por adaptar o sistema para o contexto bancário.
+*   Reaproveitar toda a lógica e os menus do `main_hospital.c`.
+*   Adaptar as nomenclaturas impressas no terminal (trocar "Pacientes" por "Clientes", "Leitos" por "Tempo por Operação", etc.).
