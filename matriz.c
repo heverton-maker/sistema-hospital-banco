@@ -1,60 +1,61 @@
 #include <stdio.h>
 #include "matriz.h"
 
-// INICIALIZAR: Zera o hospital inteiro (prepara os quartos)
+// Inicializa a matriz
 void inicializar_matriz(int *matriz) {
-    int total_vagas = LINHAS * COLUNAS; // Calcula o total de vagas (Ex: 3x3 = 9)
+    int total_celulas = NUM_CAIXAS * OPERACOES; 
     
-    // Anda pela "rua" reta da memoria RAM
-    for (int i = 0; i < total_vagas; i++) {
-        *(matriz + i) = 0; // Aritmetica de ponteiros: coloca 0 (Vazio) na posicao atual
+    for (int i = 0; i < total_celulas; i++) {
+        matriz[i] = 0; 
     }
 }
 
-// MOSTRAR: O truque de fingir que a memoria reta e um predio 2D
+// Imprime o estado atual dos caixas
 void mostrar_matriz(int *matriz) {
-    printf("\n=== PAINEL DE LEITOS (0 = Livre) ===\n");
+    printf("\nEstado dos Caixas (Tempo Restante):\n");
+    printf("          [Consulta] [Exames] [Plano]\n");
     
-    // Loop dos Andares (Linhas)
-    for (int l = 0; l < LINHAS; l++) {
-        printf("Andar %d: ", l + 1);
-        
-        // Loop dos Quartos (Colunas)
-        for (int c = 0; c < COLUNAS; c++) {
+    for (int l = 0; l < NUM_CAIXAS; l++) {
+        printf("Caixa %d:  ", l + 1);
+        for (int c = 0; c < OPERACOES; c++) {
             
-            // A FORMULA MAGICA: Transforma a coordenada (linha, coluna) no indice real do array 1D
-            int posicao = (l * COLUNAS) + c; 
+            int posicao = (l * OPERACOES) + c;
+            int tempo = matriz[posicao]; 
             
-            // Pega o valor que esta exatamente nessa posicao da memoria
-            int id_paciente = *(matriz + posicao); 
-            
-            if (id_paciente == 0) {
-                printf("[ VAGO ] ");
+            if (tempo == 0) {
+                printf("[ LIVRE ]  ");
             } else {
-                printf("[ID:%03d] ", id_paciente);
+                printf("[%d min]   ", tempo);
             }
         }
-        printf("\n"); // O "Enter" que quebra a linha e cria a ilusao visual do predio
+        printf("\n"); 
     }
-    printf("====================================\n\n");
+    printf("\n");
 }
 
-// ALOCAR ESPACO: Acha o primeiro quarto vazio e interna o paciente
-int alocar_espaco(int *matriz, int id_pessoa) {
-    int total_vagas = LINHAS * COLUNAS;
-    
-    // Varre o hospital do primeiro ao ultimo quarto
-    for (int i = 0; i < total_vagas; i++) {
+// Procura caixa livre para a operacao
+int alocar_cliente(int *matriz, int coluna_operacao, int tempo_estimado) {
+    for (int l = 0; l < NUM_CAIXAS; l++) {
         
-        // Se olhar para o espaco na memoria e o valor for 0 (Vago)
-        if (*(matriz + i) == 0) { 
-            
-            *(matriz + i) = id_pessoa; // Substitui o 0 pelo ID do paciente
-            return 1; // Retorna 1 (Sucesso) para o main e encerra a busca
+        int posicao = (l * OPERACOES) + coluna_operacao;
+        
+        if (matriz[posicao] == 0) {
+            matriz[posicao] = tempo_estimado; 
+            return l + 1; 
         }
     }
     
-    // Se o loop terminou e nao retornou 1, significa que nao encontrou nenhum zero
-    printf("HOSPITAL LOTADO! Nao ha vagas para o ID %d.\n", id_pessoa);
-    return 0; // Retorna 0 (Falha) para o main
+    return 0; 
+}
+
+// Atualiza o tempo dos atendimentos em andamento
+void passar_tempo(int *matriz) {
+    int total_celulas = NUM_CAIXAS * OPERACOES;
+    printf("Avancando tempo em 1 minuto...\n");
+    
+    for (int i = 0; i < total_celulas; i++) {
+        if (matriz[i] > 0) {
+            matriz[i] -= 1; 
+        }
+    }
 }

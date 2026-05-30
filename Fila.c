@@ -1,81 +1,76 @@
-#include <stdio.h> // Para usar o printf() e scanf() (Entrada e Saida na tela)
-#include <stdlib.h> // Para usar o malloc() e free() (Alocacao Dinamica de Memoria)
-#include <string.h> // Para lidar com textos e nomes (ex: ler o nome do paciente com espacos)
-#include "fila.h" // Para o sistema conhecer a Fila e a struct Pessoa
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "fila.h" 
 
-// INICIAR: Prepara a fila do zero
+// Inicializa a fila
 void iniciar_fila(Fila *f) {
-    f->inicio = NULL; // Ninguem no comeco
-    f->fim = NULL;    // Ninguem no final
+    f->inicio = NULL; 
+    f->fim = NULL;    
 }
 
-// ENFILEIRAR: Adiciona uma pessoa no final da fila
+// Insere um elemento no final da fila
 void enfileirar(Fila *f, Pessoa nova_pessoa) {
-    // Pede memoria ao computador para criar um novo "vagao"
     No *novo_no = (No*) malloc(sizeof(No)); 
     
     if (novo_no == NULL) {
-        printf("Erro: Memoria cheia!\n");
+        printf("Erro de alocacao de memoria.\n");
         return;
     }
     
-    novo_no->dados = nova_pessoa; // Coloca a ficha da pessoa no vagao
-    novo_no->proximo = NULL;      // Como ele e o ultimo, nao tem ninguem atras dele
+    novo_no->dados = nova_pessoa; 
+    novo_no->proximo = NULL;      
     
-    // Regra principal: Se a fila estiver vazia, ele e o primeiro e o ultimo
+    // Verifica se a fila esta vazia
     if (f->inicio == NULL) { 
         f->inicio = novo_no;
         f->fim = novo_no;
     } else { 
-        // Se ja tem gente, o atual ultimo aponta para ele, e ele vira o novo ultimo
+        // Insere no final e atualiza o ponteiro
         f->fim->proximo = novo_no;
         f->fim = novo_no;
     }
 }
 
-// DESENFILEIRAR: Remove sempre o primeiro da fila (quem foi atendido)
+// Remove o elemento do inicio da fila
 void desenfileirar(Fila *f) { 
     if (f->inicio == NULL) {
-        printf("A fila ja esta vazia!\n");
-        return; // Sai da funcao para o programa nao quebrar
+        printf("Fila vazia.\n");
+        return; 
     }  
     
-    No *aux = f->inicio; // Cria um clone apontando para o primeiro (para podermos apagar depois)
+    No *aux = f->inicio; 
     
-    f->inicio = aux->proximo; // A fila anda: o segundo passa a ser o oficial primeiro
+    f->inicio = aux->proximo; 
     
-    free(aux); // Libera a memoria do cara que foi atendido (Evita vazamento!)
+    free(aux); 
     
-    // Se tiramos o unico que estava la, a fila zerou. O fim tambem vira NULL.
+    // Se a fila esvaziou, atualiza o fim para NULL
     if (f->inicio == NULL) {
         f->fim = NULL;  
     }
 }
 
-// FRONT: Apenas olha quem e o primeiro (Sem tirar da fila)
+// Retorna os dados do primeiro elemento sem remove-lo
 Pessoa* front(Fila *f) { 
     if (f->inicio == NULL) {
-        return NULL; // Fila vazia, nao ha ninguem para olhar
+        return NULL; 
     }
 
-    // Retorna o endereco da ficha do primeiro cara, para o Medico/Gerente ler os dados
     return &(f->inicio->dados); 
 }
 
-
-// DESTRUIR: Limpa a fila inteira caso sobre alguem quando o programa fechar
+// Libera toda a memoria alocada para a fila
 void destruir_fila(Fila *f) {
-    No *atual = f->inicio; // Começa olhando para o primeiro da fila
+    No *atual = f->inicio; 
     No *proximo_no;
 
-    // Enquanto houver pessoas na fila...
     while (atual != NULL) {
-        proximo_no = atual->proximo; // Salva quem é o próximo antes de apagar o atual
-        free(atual);                 // Libera a memória do vagão atual (Evita o memory leak!)
-        atual = proximo_no;          // Anda para o próximo vagão
+        proximo_no = atual->proximo; 
+        free(atual);                 
+        atual = proximo_no;          
     }
     
-    // Zera os ponteiros por segurança
     f->inicio = NULL;
     f->fim = NULL;
 }

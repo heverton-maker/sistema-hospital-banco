@@ -2,56 +2,49 @@
 #include <stdlib.h>
 #include "pilha.h"
 
-// INICIAR: Constrói a pilha vazia na memória
+// Inicializa a pilha com a capacidade desejada
 void iniciar_pilha(Pilha *p, int capacidade_inicial) {
     p->capacidade = capacidade_inicial;
-    p->topo = -1; // -1 significa "Pilha Vazia" (pois a posição 0 já seria o primeiro paciente)
+    p->topo = -1; // -1 indica pilha vazia
     
-    // Pede memória RAM ao computador para criar o array do tamanho exato que precisamos
     p->itens = (Pessoa*) malloc(capacidade_inicial * sizeof(Pessoa));
     
     if (p->itens == NULL) {
-        printf("Erro ao alocar memoria para a Pilha!\n");
-        exit(1); // Aborta se o computador não tiver RAM disponível
+        printf("Erro de alocacao de memoria.\n");
+        exit(1); 
     }
 }
 
-// EMPILHAR: Coloca um paciente no topo da pilha (PUSH)
+// Insere um elemento no topo da pilha
 int empilhar(Pilha *p, Pessoa nova_pessoa) {
-    // OVERFLOW: Verifica se o "tubo" já encheu até à borda
+    // Verifica se a pilha esta cheia (Overflow)
     if (p->topo == p->capacidade - 1) {
-        printf("Pilha de Emergencia CHEIA!\n");
-        return 0; // Falso (Falhou ao empilhar)
+        printf("Erro: Pilha cheia.\n");
+        return 0; 
     }
     
-    p->topo++; // Sobe o marcador (post-it) um andar para cima
-    p->itens[p->topo] = nova_pessoa; // Coloca a ficha do paciente nesse novo andar
+    p->topo++; 
+    p->itens[p->topo] = nova_pessoa; 
     
-    return 1; // Verdadeiro (Sucesso)
+    return 1; 
 }
 
-// DESEMPILHAR: Tira o paciente que está no topo (POP)
+// Remove e retorna o elemento do topo da pilha
 Pessoa* desempilhar(Pilha *p) {
-    // UNDERFLOW: Verifica se a pilha já está vazia antes de tentar tirar
+    // Verifica se a pilha esta vazia (Underflow)
     if (p->topo == -1) {
         return NULL; 
     }
     
-    // Pega o endereço de memória do paciente que está exatamente na posição do topo
     Pessoa *paciente = &(p->itens[p->topo]);
     
-    p->topo--; // A MÁGICA: Apenas descemos o marcador. O sistema "esquece" quem ficou lá em cima.
+    p->topo--; 
     
-    return paciente; // Entrega o paciente ao Médico
+    return paciente; 
 }
 
-//  DESTRUIR: Limpa a sujeira quando o hospital fecha
+// Libera a memoria alocada para o array da pilha
 void destruir_pilha(Pilha *p) {
-    free(p->itens);  // Devolve a memória RAM alocada pelo malloc (Evita Memory Leak!)
-    p->itens = NULL; // Por segurança, aponta para o nada
+    free(p->itens);  
+    p->itens = NULL; 
 }
-
-
-
-
-
